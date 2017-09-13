@@ -1,0 +1,6 @@
+<config>
+    <mybaits-generator-config-path></mybaits-generator-config-path>
+    <templates-dir>.</templates-dir>
+    <path-mapping>
+    </path-mapping>
+</config>

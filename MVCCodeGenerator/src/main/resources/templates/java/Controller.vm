@@ -1,0 +1,51 @@
+﻿package ${controllerClass.package.name};
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.xtxk.hb.framework.model.Page;
+import com.xtxk.hb.framework.model.PageInfo;
+import com.xtxk.hb.framework.model.Result;
+import ${poClass.name};
+#if(${poClass.name} != ${pagePOClass.name})
+import ${pagePOClass.name};
+#end
+
+@Controller
+@RequestMapping("${controllerRequestMappingPath}")
+public class ${controllerClass.simpleName} {
+    @Autowired
+    private ${serviceClass.simpleName} ${serviceVarName};
+    
+    @RequestMapping("/page")
+    @ResponseBody
+    public Page<${pagePOClass.simpleName}> page(${pagePOClass.simpleName} ${pagePOVarName}, PageInfo pparams) {
+        return ${serviceVarName}.page(${pagePOVarName}, pparams);
+    }
+    
+    @RequestMapping("/form")
+    public ModelAndView form(ModelAndView mv, ${poClass.simpleName} ${poVarName}) {
+    	if (${poVarName}.getId() != null)
+    		${poVarName} = ${serviceVarName}.getById(${poVarName}.getId());
+        return mv.addObject("${poVarName}", ${poVarName});
+    }
+
+    @RequestMapping("/save")
+    @ResponseBody
+    public Result save(${poClass.simpleName} ${poVarName}) {
+        if (info.getId() == null)
+            return Result.get( ${serviceVarName}.add(${poVarName}) );
+        else
+            return Result.get( ${serviceVarName}.update(${poVarName}) );
+    }
+    
+    @RequestMapping("/delete")
+    @ResponseBody
+    public Result batchDelete(@RequestParam("ids") String[] ids) {
+        return Result.get( infoService.batchDelete(ids) > 0 );
+    }
+}

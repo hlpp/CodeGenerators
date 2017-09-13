@@ -1,0 +1,34 @@
+﻿package ${serviceClass.package.name};
+
+import org.springframework.stereotype.Service;
+
+import com.xtxk.hb.framework.dao.DaoSupport;
+import com.xtxk.hb.framework.model.Page;
+import com.xtxk.hb.framework.model.PageInfo;
+import ${poClass.name};
+#if(${poClass.name} != ${pagePOClass.name})
+import ${pagePOClass.name};
+#end
+
+@Service
+public class ${serviceClass.simpleName} extends DaoSupport {
+    public Page<${pagePOClass.simpleName}> page(${pagePOClass.simpleName} ${pagePOVarName}, PageInfo pparams) {
+        return list(${pagePOClass.simpleName}.class, "selectByCond", ${pagePOVarName}, pparams);
+    }
+
+    public ${poClass.simpleName} getById(Integer id) {
+        return load(${poClass.simpleName}.class, "selectByPrimaryKey", id);
+    }
+
+    public boolean add(${poClass.simpleName} ${poVarName}) {
+        return insert(${poVarName}) > 0;
+    }
+
+    public boolean update(${poClass.simpleName} ${poVarName}) {
+        return updateByPrimaryKeySelective(${poVarName}) > 0;
+    }
+
+    public int batchDelete(String[] ids) {
+        return delete("batchDeleteByPrimaryKey", ids);
+    }
+}
