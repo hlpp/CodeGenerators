@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -29,10 +28,9 @@ import hlpp.github.io.generator.utils.StrUtils;
 
 public class MVCCodeGenerator {
     private VelocityEngine engine;
-    private ConfigManager config;
     
     public void doConfig(String path) {
-        config = new ConfigManager(getClass().getResource("/config.xml").getPath() + path);
+        ConfigManager config = new ConfigManager(getClass().getResource("/config.xml").getPath() + path);
         config.set("mybaits-generator-config-path", getClass().getResource("/mybaits-generator.xml").getPath());
 
         VelocityContext context = new VelocityContext();
@@ -43,7 +41,6 @@ public class MVCCodeGenerator {
     }
 
     private void initContext(ConfigManager config, VelocityContext context) {
-        // 解析 mybaits-generator-config 中的model元素的targetPackage属性值
         SAXReader reader = new SAXReader();
         Document doc = null;
         try {
