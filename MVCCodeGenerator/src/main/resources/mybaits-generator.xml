@@ -13,19 +13,19 @@
         </commentGenerator>    
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.197:3306/wearable_device_db?useUnicode=true"
-        	userId="backup"
-        	password="jcpt@$e2015">    
+        	userId=""
+        	password="">    
         </jdbcConnection>    
         <javaTypeResolver>    
             <property name="forceBigDecimals" value="false"/>    
         </javaTypeResolver>    
  
-        <javaModelGenerator targetPackage="" targetProject="src/main/java">    
+        <javaModelGenerator targetPackage="output.model" targetProject="src/main/java">    
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="false"/>
         </javaModelGenerator>    
 
-        <sqlMapGenerator targetPackage="" targetProject="src/main/java">    
+        <sqlMapGenerator targetPackage="output.model" targetProject="src/main/java">    
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
   
