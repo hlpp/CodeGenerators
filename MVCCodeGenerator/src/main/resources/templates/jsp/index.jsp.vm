@@ -11,12 +11,12 @@
     <form id="frmQuery">
 		<table class="form">
 		   <tr>
-	           <td class="form">
-	               <a id="query" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
-	           </td>
-	           <c:forEach var="func" items="${ROLE_FUNCS}">
-	               <td class="form"><a id="${func.code}" class="easyui-linkbutton" data-options="iconCls:'${func.icon}'">${func.funcName}</a></td>
-	           </c:forEach>
+	            <td class="form">
+	            	<a id="query" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
+	            </td>
+	            <c:forEach var="func" items="${ROLE_FUNCS}">
+					<td class="form"><a id="${func.code}" class="easyui-linkbutton" data-options="iconCls:'${func.icon}'">${func.funcName}</a></td>
+	            </c:forEach>
 			</tr>
 		</table>
     </form>

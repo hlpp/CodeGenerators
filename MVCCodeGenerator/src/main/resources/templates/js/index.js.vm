@@ -1,49 +1,48 @@
 $(function(){
-   $('#query').click(function(){
-       $('#dg').datagrid('load', $('#frmQuery').serializeObject()); 
-   });
-   $('#add').click(function(){
-       edit(false);
-   });
-   $('#update').click(function(){
-       edit(true);
-   });
-   $('#delete').click(function(){
-       var row = $('#dg').datagrid('getSelected');
-       if(!row) return;
-       openConfirmDeleteDialog(function(){
-           $.post(CONFIG.baseUrl + '${controllerRequestMappingPathName}/delete.do?${primaryFieldVarName}=' + row.${primaryFieldVarName}, function(ret){
-               showOpResultMessage(ret);
-               $('#dg').datagrid('load');
-           });
-       });
-   });
-   
-   function edit(update) {
-       var url = '${controllerRequestMappingPathName}/form.do';
-       if (update) {
-           var row = $('#dg').datagrid('getSelected')
-           if (!row)
-               return;
-           url += '?${primaryFieldVarName}=' + row.${primaryFieldVarName};
-       }
-       
-       var dlg = openEditDialog({
-           width: 500,
-           height: 440,
-           href: url,
-           onSave: function() {
-               formSubmit({
-                   url: '${controllerRequestMappingPathName}/save.do',
-                   success: function(ret) {
-                       if (ret.success) {
-                           dlg.dialog('destroy');
-                           $('#dg').datagrid('load');
-                       }
-                       showOpResultMessage(ret);
-                   }
-               });
-           }
-       });
-   }
+    $('#query').click(function(){
+        $('#dg').datagrid('load', $('#frmQuery').serializeObject()); 
+    });
+    $('#add').click(function(){
+        edit(false);
+    });
+    $('#update').click(function(){
+        edit(true);
+    });
+    $('#delete').click(function(){
+        var row = $('#dg').datagrid('getSelected');
+        if(!row) return;
+        openConfirmDeleteDialog(function(){
+            $.post(CONFIG.baseUrl + '${controllerRequestMappingPathName}/delete.do?${primaryFieldVarName}=' + row.${primaryFieldVarName}, function(ret){
+                showOpResultMessage(ret);
+                $('#dg').datagrid('load');
+            });
+        });
+    });
+    
+    function edit(update) {
+        var url = '${controllerRequestMappingPathName}/form.do';
+        if (update) {
+            var row = $('#dg').datagrid('getSelected')
+            if (!row) return;
+            url += '?${primaryFieldVarName}=' + row.${primaryFieldVarName};
+        }
+         
+        var dlg = openEditDialog({
+            width: 500,
+            height: 440,
+            href: url,
+            onSave: function() {
+                formSubmit({
+                    url: '${controllerRequestMappingPathName}/save.do',
+                    success: function(ret) {
+                        if (ret.success) {
+                            dlg.dialog('destroy');
+                            $('#dg').datagrid('load');
+                        }
+                        showOpResultMessage(ret);
+                    }
+                });
+            }
+        });
+    }
 });
