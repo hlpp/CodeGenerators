@@ -23,13 +23,13 @@
 </div>
 <table id="dg" class="easyui-datagrid" toolbar="#tbr"
     data-options="url:'${urlPath}${controllerRequestMappingPathName}/page.do',
-                  pagination:true,
-                  pagePosition:'bottom',
-                  pageNumber:1,
-                  pageSize:20,
-                  pageList:[10,20,50,100],
-                  singleSelect:true,
-                  fit:true">
+	    pagination:true,
+	    pagePosition:'bottom',
+	    pageNumber:1,
+	    pageSize:20,
+	    pageList:[10,20,50,100],
+	    singleSelect:true,
+	    fit:true">
     <thead>
         <tr>
         #foreach($opt in $table.headDataOptions)
