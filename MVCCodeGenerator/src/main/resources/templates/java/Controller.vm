@@ -1,5 +1,7 @@
 ﻿package ${controllerClass.package.name};
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,21 +26,21 @@ public class ${controllerClass.simpleName} {
     
     @RequestMapping("/page")
     @ResponseBody
-    public Page<${pagePOClass.simpleName}> page(${pagePOClass.simpleName} ${pagePOVarName}, PageInfo pparams) {
-        return ${serviceVarName}.page(${pagePOVarName}, pparams);
+    public Page<${pagePOClass.simpleName}> page(@RequestParam Map<String, Object> params, PageInfo pparams) {
+        return ${serviceVarName}.page(params, pparams);
     }
     
     @RequestMapping("/form")
     public ModelAndView form(ModelAndView mv, ${poClass.simpleName} ${poVarName}) {
-    	if (${poVarName}.getId() != null)
-    		${poVarName} = ${serviceVarName}.getById(${poVarName}.getId());
+    	if (${poVarName}.${primaryGetterName}() != null)
+    		${poVarName} = ${serviceVarName}.getByPK(${poClass.simpleName}.class, ${poVarName}.${primaryGetterName}());
         return mv.addObject("${poVarName}", ${poVarName});
     }
 
     @RequestMapping("/save")
     @ResponseBody
     public Result save(${poClass.simpleName} ${poVarName}) {
-        if (${poVarName}.getId() == null)
+        if (${poVarName}.${primaryGetterName}() == null)
             return Result.get( ${serviceVarName}.add(${poVarName}) );
         else
             return Result.get( ${serviceVarName}.update(${poVarName}) );
@@ -46,7 +48,7 @@ public class ${controllerClass.simpleName} {
     
     @RequestMapping("/delete")
     @ResponseBody
-    public Result batchDelete(@RequestParam("ids") String[] ids) {
-        return Result.get( ${serviceVarName}.batchDelete(ids) > 0 );
+    public Result delete(${primaryFieldJavaType} ${primaryFieldVarName}) {
+        return Result.get( ${serviceVarName}.delete(${primaryFieldVarName}) );
     }
 }

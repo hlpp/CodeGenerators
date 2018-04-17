@@ -1,4 +1,4 @@
-import hlpp.github.io.generator.MVCCodeGenerator;
+package hlpp.github.io.generator;
 
 public class MVCCodeGeneratorTest {
     public static void main(String[] args) {

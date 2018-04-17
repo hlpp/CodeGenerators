@@ -6,12 +6,19 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -19,28 +26,70 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.mybatis.generator.api.MyBatisGenerator;
+import org.mybatis.generator.config.xml.ConfigurationParser;
+import org.mybatis.generator.exception.InvalidConfigurationException;
+import org.mybatis.generator.exception.XMLParserException;
+import org.mybatis.generator.internal.DefaultShellCallback;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 
-import hlpp.github.io.generator.data.MClass;
-import hlpp.github.io.generator.data.MPackage;
-import hlpp.github.io.generator.data.Table;
-import hlpp.github.io.generator.data.TableHeadDataOption;
+import hlpp.github.io.generator.db.Column;
+import hlpp.github.io.generator.tpldata.MClass;
+import hlpp.github.io.generator.tpldata.MPackage;
+import hlpp.github.io.generator.tpldata.Table;
+import hlpp.github.io.generator.tpldata.TableHeadDataOption;
 import hlpp.github.io.generator.utils.StrUtils;
 
 public class MVCCodeGenerator {
+    private ConfigManager config;
+    
+    private static ApplicationContext applicationContext = null;  
+    private static JdbcTemplate jdbcTemplate = null;  
+    
     private VelocityEngine engine;
     
+    
+    static {
+        applicationContext = new ClassPathXmlApplicationContext("application.xml");  
+        jdbcTemplate = (JdbcTemplate) applicationContext.getBean("jdbcTemplate");  
+    }
+    
     public void doConfig(String path) {
-        ConfigManager config = new ConfigManager(getClass().getResource("/config.xml").getPath() + path);
+        List<String> warnings = new ArrayList<String>();
+        MyBatisGenerator generator;
+        try {
+            generator = new MyBatisGenerator(
+                new ConfigurationParser(warnings).parseConfiguration(new File(MVCCodeGenerator.class.getResource("/mybaits-generator.xml").getPath())),
+                new DefaultShellCallback(true),
+                warnings);
+            generator.generate(null);
+            for (String s : warnings) {
+                System.out.println(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("model生成完成,刷新目录后回车继续");
+        new Scanner(System.in).nextLine();
+        System.out.println("继续...");
+        
+        
+        
+        config = new ConfigManager(getClass().getResource("/config.properties").getPath() + path);
         config.set("mybaits-generator-config-path", getClass().getResource("/mybaits-generator.xml").getPath());
 
         VelocityContext context = new VelocityContext();
 
-        initContext(config, context);
+        initContext(context);
         
         generate(context);
     }
 
-    private void initContext(ConfigManager config, VelocityContext context) {
+    private void initContext(VelocityContext context) {
         SAXReader reader = new SAXReader();
         Document doc = null;
         try {
@@ -55,17 +104,43 @@ public class MVCCodeGenerator {
         Element modelElem = contextElem.element("javaModelGenerator");
         Element tableElem = contextElem.element("table");
         String modelTagetPackage = modelElem.attribute("targetPackage").getValue();
+        String tableName = tableElem.attribute("tableName").getValue();
         String objectName = tableElem.attribute("domainObjectName").getValue();
-        
-        context.put("modelTargetProject", modelElem.attribute("targetProject").getValue());
+        String modelTargetProject = modelElem.attribute("targetProject").getValue();
+        context.put("modelTargetProject", modelTargetProject);
         
         Class<?> poClass = null;
         try {
-            poClass = Class.forName(modelTagetPackage + "." + objectName);
-        } catch (ClassNotFoundException e) {
+            URL[] urls = new URL[]{new URL("file:" + SystemUtils.FILE_SEPARATOR + config.get("classesDir"))};
+            @SuppressWarnings("resource")
+            ClassLoader loader = new URLClassLoader(urls);
+            poClass = loader.loadClass(modelTagetPackage + "." + objectName);
+        } catch (Exception e) {
             e.printStackTrace();
             return;
         }
+        
+        //mysql
+        List<Column> columnInfos = jdbcTemplate.query(
+            String.format("select column_name name, column_comment comment, column_key `key`"
+                + " from information_schema.columns where table_name = '%s' and table_schema = '%s'", tableName, config.get("databaseName")),
+            new BeanPropertyRowMapper<Column>(Column.class));
+        if (columnInfos.isEmpty()) {
+            throw new RuntimeException("查询表列信息失败");
+        }
+        
+        // 查询表主键
+        Column primaryKeyColumn = null;
+        for (Column col : columnInfos) {
+            if ("PRI".equals(col.getKey())) {
+                primaryKeyColumn = col;
+                break;
+            }
+        }
+        String primaryFieldVarName = NameUtils.underlineToCamelCase(primaryKeyColumn.getName());
+        context.put("primaryFieldVarName", primaryFieldVarName);
+        context.put("primaryGetterName", "get" + StrUtils.firstLetterUpper(primaryFieldVarName));
+        context.put("primaryFieldJavaType", "Integer");//FIXME
         
         context.put("poClass", poClass);
         context.put("pagePOClass", poClass);
@@ -93,10 +168,11 @@ public class MVCCodeGenerator {
         
         context.put("indexJSPath", StrUtils.firstLetterLower(poClass.getSimpleName()));
         
-        initTable(context);
+
+        initTableToContext(columnInfos, tableName, context);
     }
 
-    private void initTable(VelocityContext context) {
+    private void initTableToContext(List<Column> columnInfos, String tableName, VelocityContext context) {
         List<String> fieldNames = new ArrayList<String>();
         Class<?> pagePOClass = (Class<?>) context.get("pagePOClass");
         Table table = new Table();
@@ -112,14 +188,28 @@ public class MVCCodeGenerator {
             e.printStackTrace();
         }
         
-        int avgWidthPercent = (int)(100 * (1.0f / fieldNames.size()));
+        // 注释转换为标题名
+        Map<String, String> columnTitleMap = new HashMap<String, String>();
+        String terminators = "：:,-. ";
+        for (Column col : columnInfos) {
+            String title = col.getComment();
+            for (int i = 0; i < terminators.length(); i++) {
+                char t = terminators.charAt(i);
+                if (title.indexOf(t) != -1) {
+                    title = title.substring(0, title.indexOf(t));
+                    break;
+                }
+            }
+            columnTitleMap.put(NameUtils.underlineToCamelCase(col.getName()), title);
+        }
         
         for (String fieldName : fieldNames) {
             TableHeadDataOption opt = new TableHeadDataOption();
             opt.setField(fieldName);
-            opt.setWidth(avgWidthPercent + "%");
+            ///opt.setWidth(avgWidthPercent + "%");
+            opt.setWidth("100");
             opt.setAlign("center");
-            opt.setTitle(fieldName);
+            opt.setTitle(columnTitleMap.containsKey(fieldName) ? columnTitleMap.get(fieldName) : fieldName);
             table.getHeadDataOptions().add(opt);
         }
         
@@ -145,8 +235,7 @@ public class MVCCodeGenerator {
     
     private void genController(VelocityContext context) {
         String packageDir = ((MClass)context.get("controllerClass")).getPackage().getName().replaceAll("\\.", "/");
-        File dir = new File(System.getProperty("user.dir").replaceAll("\\\\", "/")
-            + "/" + context.get("modelTargetProject") + "/" + packageDir);
+        File dir = new File(config.get("javaOutputDir") + packageDir);
         File file = new File(dir, ((MClass)context.get("controllerClass")).getSimpleName() + ".java");
         execTemplateToFile(context, "/java/Controller.vm", file);
         System.out.println("生成Controller完成");
@@ -154,16 +243,14 @@ public class MVCCodeGenerator {
     
     private void genService(VelocityContext context) {
         String packageDir = ((MClass)context.get("serviceClass")).getPackage().getName().replaceAll("\\.", "/");
-        File dir = new File(System.getProperty("user.dir").replaceAll("\\\\", "/")
-            + "/" + context.get("modelTargetProject") + "/" + packageDir);
+        File dir = new File(config.get("javaOutputDir") + packageDir);
         File file = new File(dir, ((MClass)context.get("serviceClass")).getSimpleName() + ".java");
         execTemplateToFile(context, "/java/Service.vm", file);
         System.out.println("生成Service完成");
     }
     
     private void genJSs(VelocityContext context) {
-        File dir = new File(System.getProperty("user.dir").replaceAll("\\\\", "/")
-            + "/src/main/webapp/js/"
+        File dir = new File(config.get("jsOutputDir")
             + StrUtils.firstLetterLower(((Class)context.get("poClass")).getSimpleName()));
         File file = new File(dir, "index.js");
         execTemplateToFile(context, "/js/index.js.vm", file);
@@ -171,8 +258,7 @@ public class MVCCodeGenerator {
     }
 
     private void genJSPs(VelocityContext context) {
-        File dir = new File(System.getProperty("user.dir").replaceAll("\\\\", "/")
-            + "/src/main/webapp/WEB-INF/jsp/"
+        File dir = new File(config.get("jspOutputDir")
             + StrUtils.firstLetterLower(((Class)context.get("poClass")).getSimpleName()));
 
         List<String> fileNames = new ArrayList<String>();

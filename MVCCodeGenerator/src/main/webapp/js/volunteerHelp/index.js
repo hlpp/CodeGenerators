@@ -12,7 +12,7 @@ $(function(){
        var row = $('#dg').datagrid('getSelected');
        if(!row) return;
        openConfirmDeleteDialog(function(){
-           $.post(CONFIG.baseUrl + '${controllerRequestMappingPathName}/delete.do?${primaryFieldVarName}=' + row.${primaryFieldVarName}, function(ret){
+           $.post(CONFIG.baseUrl + 'volunteerHelp/delete.do?id=' + row.id, function(ret){
                showOpResultMessage(ret);
                $('#dg').datagrid('load');
            });
@@ -20,21 +20,22 @@ $(function(){
    });
    
    function edit(update) {
-       var url = '${controllerRequestMappingPathName}/form.do';
+       var url = 'volunteerHelp/form.do';
        if (update) {
            var row = $('#dg').datagrid('getSelected')
            if (!row)
                return;
-           url += '?${primaryFieldVarName}=' + row.${primaryFieldVarName};
+           url += '?id=' + row.id;
        }
        
        var dlg = openEditDialog({
+           title: '编辑',
            width: 500,
            height: 440,
            href: url,
            onSave: function() {
                formSubmit({
-                   url: '${controllerRequestMappingPathName}/save.do',
+                   url: 'volunteerHelp/save.do',
                    success: function(ret) {
                        if (ret.success) {
                            dlg.dialog('destroy');

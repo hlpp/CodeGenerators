@@ -11,17 +11,7 @@
     <form id="frmQuery">
 		<table class="form">
 		   <tr>
-	           <td class="form">标题</td>
 	           <td class="form">
-	               <input class="easyui-textbox" name="title" type="text">
-	           </td>
-	           <td class="form">日期</td>
-	           <td class="form">
-	               <input class="easyui-datebox filter" name="beginCreateTime" type="text">
-	                            至
-	               <input class="easyui-datebox filter" name="endCreateTime" type="text">
-	           </td>
-	           <td class="form" colspan="7">
 	               <a id="query" class="easyui-linkbutton" data-options="iconCls:'icon-search'">查询</a>
 	           </td>
 	           <c:forEach var="func" items="${ROLE_FUNCS}">
@@ -43,7 +33,7 @@
     <thead>
         <tr>
         #foreach($opt in $table.headDataOptions)
-    <th data-options="field:'${opt.field}', width:'${opt.width}', align:'left'">${opt.title}</th>
+    <th data-options="field:'${opt.field}', width:'${opt.width}', halign: 'center', align:'left'">${opt.title}</th>
         #end
 	</tr>
     </thead>

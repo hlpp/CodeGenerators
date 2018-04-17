@@ -13,26 +13,32 @@
         </commentGenerator>    
 
         <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.197:3306/wearable_device_db?useUnicode=true"
-        	userId=""
-        	password="">    
+        	userId="backup"
+        	password="jcpt@$e2015">    
         </jdbcConnection>    
         <javaTypeResolver>    
             <property name="forceBigDecimals" value="false"/>    
         </javaTypeResolver>    
  
-        <javaModelGenerator targetPackage="output.model" targetProject="src/main/java">    
+        <javaModelGenerator targetPackage="com.xtxk.hb.volunteer.model" targetProject="E:\workspace\hbManager\src\main\java">    
             <property name="enableSubPackages" value="true"/>
             <property name="trimStrings" value="false"/>
         </javaModelGenerator>    
 
-        <sqlMapGenerator targetPackage="output.model" targetProject="src/main/java">    
+        <sqlMapGenerator targetPackage="com.xtxk.hb.volunteer.model" targetProject="E:\workspace\hbManager\src\main\java">    
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
   
-<!--         <javaClientGenerator type="XMLMAPPER" targetPackage="com.xtxk.hb.shop.finance.dao" targetProject="src/main/java"> -->
-<!--             <property name="enableSubPackages" value="true"/> -->
-<!--         </javaClientGenerator> -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.xtxk.hb.volunteer.mapper" targetProject="E:\workspace\hbManager\src\main\java">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
 
-        <table tableName="" domainObjectName="" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>  
+        <table tableName="volunteer_help"
+            domainObjectName="VolunteerHelp"
+            enableCountByExample="false"
+            enableUpdateByExample="false"
+            enableDeleteByExample="false"
+            enableSelectByExample="false"
+            selectByExampleQueryId="false"></table>  
     </context>    
 </generatorConfiguration>

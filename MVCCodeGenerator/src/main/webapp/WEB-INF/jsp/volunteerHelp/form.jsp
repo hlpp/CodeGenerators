@@ -8,7 +8,7 @@
 </head>
 <body>
     <form id="form" method="post">
-        <input type="hidden" name="id" value="${${poVarName}.id}" />
+        <input type="hidden" name="id" value="${volunteerHelp.id}" />
         <table class="form">
         </table>
     </form>

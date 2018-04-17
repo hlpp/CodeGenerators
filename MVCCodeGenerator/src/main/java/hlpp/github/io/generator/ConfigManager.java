@@ -9,14 +9,13 @@ public class ConfigManager {
     private Properties props = new Properties();  
     
     public ConfigManager(String path) {
-        /*
         try {
             props.load(new FileInputStream(path));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
     }
     
     public void set(String key, String value) {  

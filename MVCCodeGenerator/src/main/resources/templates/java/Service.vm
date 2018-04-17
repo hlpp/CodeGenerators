@@ -1,5 +1,7 @@
 ﻿package ${serviceClass.package.name};
 
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 
 import com.xtxk.hb.framework.dao.DaoSupport;
@@ -12,12 +14,8 @@ import ${pagePOClass.name};
 
 @Service
 public class ${serviceClass.simpleName} extends DaoSupport {
-    public Page<${pagePOClass.simpleName}> page(${pagePOClass.simpleName} ${pagePOVarName}, PageInfo pparams) {
-        return list(${pagePOClass.simpleName}.class, "selectByCond", ${pagePOVarName}, pparams);
-    }
-
-    public ${poClass.simpleName} getById(Integer id) {
-        return load(${poClass.simpleName}.class, "selectByPrimaryKey", id);
+    public Page<${pagePOClass.simpleName}> page(Map<String, Object> params, PageInfo pparams) {
+        return list(${pagePOClass.simpleName}.class, "selectByCond", params, pparams);
     }
 
     public boolean add(${poClass.simpleName} ${poVarName}) {
@@ -25,10 +23,10 @@ public class ${serviceClass.simpleName} extends DaoSupport {
     }
 
     public boolean update(${poClass.simpleName} ${poVarName}) {
-        return updateByPrimaryKeySelective(${poVarName}) > 0;
+        return updateByPKSelective(${poVarName}) > 0;
     }
 
-    public int batchDelete(String[] ids) {
-        return delete("batchDeleteByPrimaryKey", ids);
+    public boolean delete(${primaryFieldJavaType} ${primaryFieldVarName}) {
+        return super.deleteByPK(${primaryFieldVarName}) > 0;
     }
 }

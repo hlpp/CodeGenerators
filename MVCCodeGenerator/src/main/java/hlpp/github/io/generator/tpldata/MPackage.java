@@ -1,4 +1,4 @@
-package hlpp.github.io.generator.data;
+package hlpp.github.io.generator.tpldata;
 
 public class MPackage {
     private String name;
