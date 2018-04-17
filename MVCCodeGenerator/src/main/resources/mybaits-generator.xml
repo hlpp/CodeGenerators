@@ -25,16 +25,16 @@
             <property name="trimStrings" value="false"/>
         </javaModelGenerator>    
 
-        <sqlMapGenerator targetPackage="com.xtxk.hb.volunteer.model" targetProject="E:\workspace\hbManager\src\main\java">    
+        <sqlMapGenerator targetPackage="com.xtxk.hb.volunteer.mapperxml" targetProject="E:\workspace\hbManager\src\main\java">    
             <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
-  
-        <javaClientGenerator type="XMLMAPPER" targetPackage="com.xtxk.hb.volunteer.mapperxml" targetProject="E:\workspace\hbManager\src\main\java">
+        <!--  
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.xtxk.hb.volunteer.mapper" targetProject="E:\workspace\hbManager\src\main\java">
             <property name="enableSubPackages" value="true"/>
-        </javaClientGenerator>
+        </javaClientGenerator>-->
 
-        <table tableName="volunteer_help"
-            domainObjectName="VolunteerHelp"
+        <table tableName="volunteer_help_order"
+            domainObjectName="VolunteerHelpOrder"
             enableCountByExample="false"
             enableUpdateByExample="false"
             enableDeleteByExample="false"

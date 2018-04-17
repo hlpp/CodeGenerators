@@ -71,7 +71,7 @@ public class MVCCodeGenerator {
             e.printStackTrace();
         }
         
-        System.out.println("model生成完成,刷新目录后回车继续");
+        System.out.println("model生成完成, 请刷新目录（并确保已编译）后回车继续");
         new Scanner(System.in).nextLine();
         System.out.println("继续...");
 
