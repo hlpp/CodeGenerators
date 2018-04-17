@@ -1,4 +1,4 @@
-package hlpp.github.io.generator.tpldata;
+package hulang1024.github.io.generator.tpldata;
 
 public class MClass {
     private String simpleName;

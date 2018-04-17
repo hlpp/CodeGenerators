@@ -1,4 +1,4 @@
-package hlpp.github.io.generator;
+package hulang1024.github.io.generator;
 
 public class NameUtils {
     /* 将下划线大写风格转换为驼峰风格 */

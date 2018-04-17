@@ -1,4 +1,4 @@
-package hlpp.github.io.generator;
+package hulang1024.github.io.generator;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -6,7 +6,6 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
@@ -28,20 +27,18 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.xml.ConfigurationParser;
-import org.mybatis.generator.exception.InvalidConfigurationException;
-import org.mybatis.generator.exception.XMLParserException;
 import org.mybatis.generator.internal.DefaultShellCallback;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import hlpp.github.io.generator.db.Column;
-import hlpp.github.io.generator.tpldata.MClass;
-import hlpp.github.io.generator.tpldata.MPackage;
-import hlpp.github.io.generator.tpldata.Table;
-import hlpp.github.io.generator.tpldata.TableHeadDataOption;
-import hlpp.github.io.generator.utils.StrUtils;
+import hulang1024.github.io.generator.db.Column;
+import hulang1024.github.io.generator.tpldata.MClass;
+import hulang1024.github.io.generator.tpldata.MPackage;
+import hulang1024.github.io.generator.tpldata.Table;
+import hulang1024.github.io.generator.tpldata.TableHeadDataOption;
+import hulang1024.github.io.generator.utils.StrUtils;
 
 public class MVCCodeGenerator {
     private ConfigManager config;
@@ -57,6 +54,7 @@ public class MVCCodeGenerator {
         jdbcTemplate = (JdbcTemplate) applicationContext.getBean("jdbcTemplate");  
     }
     
+    @SuppressWarnings("resource")
     public void doConfig(String path) {
         List<String> warnings = new ArrayList<String>();
         MyBatisGenerator generator;
@@ -76,9 +74,7 @@ public class MVCCodeGenerator {
         System.out.println("model生成完成,刷新目录后回车继续");
         new Scanner(System.in).nextLine();
         System.out.println("继续...");
-        
-        
-        
+
         config = new ConfigManager(getClass().getResource("/config.properties").getPath() + path);
         config.set("mybaits-generator-config-path", getClass().getResource("/mybaits-generator.xml").getPath());
 

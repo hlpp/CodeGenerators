@@ -1,4 +1,4 @@
-package hlpp.github.io.generator.utils;
+package hulang1024.github.io.generator.utils;
 
 public class StrUtils {
     public static String firstLetterLower(String s) {

@@ -1,4 +1,4 @@
-package hlpp.github.io.generator.db;
+package hulang1024.github.io.generator.db;
 
 public class Column {
     private String name;
